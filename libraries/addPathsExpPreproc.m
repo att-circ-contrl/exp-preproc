@@ -17,8 +17,7 @@ fullname = which('addPathsExpPreproc');
 % Add the new paths.
 % (This checks for duplicates, so we don't have to.)
 
-% FIXME - NYI.
-%addpath([ thisdir filesep 'lib-exppreproc-' ]);
+addpath([ thisdir filesep 'lib-exppreproc-iter' ]);
 
 
 
