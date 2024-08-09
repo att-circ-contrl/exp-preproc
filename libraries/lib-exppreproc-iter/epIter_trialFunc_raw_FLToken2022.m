@@ -23,7 +23,8 @@ function trialresult = epIter_trialFunc_raw_FLToken2022( ...
 %
 % "outfilepat" is a sprintf pattern used to generate the output file name
 %   for saving Field Trip data. This needs three '%s' tokens, for the
-%   session label, probe label, and trial label (in that order).
+%   session label, probe label, and trial label (in that order). The output
+%   file will contain "ftdata_raw" and "ftlabels_cooked", per PREPROCFILES.txt.
 % "wantforce" is true to redo processing even if the output file already
 %   exists, and false to skip processing if the output file is present.
 % "sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
