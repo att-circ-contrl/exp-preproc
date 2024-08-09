@@ -1,0 +1,64 @@
+The following types of function handle are used by epIter_processSessions.
+Passing NaN instead of a function handle skips that function (so there's
+no need to define do-nothing functions).
+
+
+
+beforedata = probefuncbefore( sessionmeta, probemeta, trialdefmeta, wantmsgs )
+
+This function is called during probe iteration, before trial iteration. It
+is intended to gather session- or probe-specific data needed when processing
+trials.
+
+"sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
+"probemeta" is a probe definition structure, per PROBEDEFS.txt.
+"trialdefmeta" is a structure containing all of the variables in the trial
+  definition metadata file, per PREPROCFILES.txt.
+"wantmsgs" is true to emit console messages and false otherwise.
+
+"beforedata" is a return variable of any type (typically a struct).
+
+
+
+trialresult = ...
+  trialfunc( sessionmeta, probemeta, trialdefmeta, tidx, beforedata, wantmsgs )
+
+This function is called during trial iteration. It is intended to do two
+things: First, it may read per-trial input files and generate per-trial
+output files. Second, it may generate per-trial output data that is
+aggregated for analysis (or just recording) by "probefuncafter".
+
+"sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
+"probemeta" is a probe definition structure, per PROBEDEFS.txt.
+"trialdefmeta" is a structure containing all of the variables in the trial
+  definition metadata file, per PREPROCFILES.txt.
+"tidx" is the row index of the present trial within trial metadata tables.
+"beforedata" is the data variable returned by "probefuncbefore".
+"wantmsgs" is true to emit console messages and false otherwise.
+
+"trialresult" is a return variable of any type (typically NaN if unused,
+  and either a struct or a scalar if used).
+
+
+
+probefuncafter( ...
+  sessionmeta, probemeta, trialdefmeta, beforedata, trialresults, wantmsgs )
+
+This function is called during probe iteration, after trial iteration. It
+is intended to consolidate per-trial return data and to write either this
+consolidated data or some derived analysis output to disk.
+
+"sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
+"probemeta" is a probe definition structure, per PROBEDEFS.txt.
+"trialdefmeta" is a structure containing all of the variables in the trial
+  definition metadata file, per PREPROCFILES.txt.
+"beforedata" is the data variable returned by "probefuncbefore".
+"trialresults" is a cell array indexed by trial row number that contains
+  the data variables returned by "trialfunc".
+"wantmsgs" is true to emit console messages and false otherwise.
+
+No return value.
+
+
+
+(This is the end of the file.)
