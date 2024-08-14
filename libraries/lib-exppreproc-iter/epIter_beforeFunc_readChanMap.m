@@ -4,8 +4,9 @@ function chanstruct = epIter_beforeFunc_readChanMap( chanfile, wantmsgs )
 %
 % This function reads channel map information and returns it in a structure.
 %
-% This is intended to be called as part of a "probebeforefunc" function,
-% per ITERFUNCS.txt. Typical implementations would be:
+% This is intended to be called as a "probebeforefunc" function, per
+% ITERFUNCS.txt, or as part of such a function. A typical implementation
+% would be:
 %
 % beforefunc = @(sessionmeta, probemeta, trialdefmeta, wantmsgs) ...
 %   epIter_beforeFunc_readChanMap( ...
