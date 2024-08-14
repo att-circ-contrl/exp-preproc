@@ -33,7 +33,7 @@ chanstruct.chanlabels_raw = {};
 chanstruct.chanlabels_cooked = {};
 
 
-if ~exist(chanfile)
+if ~exist(chanfile, 'file')
   if wantmsgs
     disp([ '###  Can''t find channel map file "' chanfile '".' ]);
   end

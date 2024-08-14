@@ -145,7 +145,7 @@ end  % Session iteration.
 
 % Banner.
 if want_messages
-  disp(' == Finished.');
+  disp('== Finished.');
 end
 
 

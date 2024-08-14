@@ -1,0 +1,135 @@
+Files saved by the preprocessing library functions are as follows.
+Filenames are configurable; the ones shown are typical.
+
+
+Global metadata:
+
+"dataset-meta.mat" contains:
+  sessionlist  (struct array per SESSIONMETA.txt)
+  ttldefs  (per TTLSIGNALDEFS.txt)
+  probelabels  (from getAllProbeNames({ sessionlist.probedefs }))
+  probetitles  (from getAllProbeNames({ sessionlist.probedefs }))
+
+
+
+Per-session metadata that we don't have to revisit:
+
+"(session)-events-raw.mat" contains everything returned by readAllTTLEvents(),
+without time alignment or timestamp propagation:
+  boxevents
+  gameevents
+  evcodedefs  (per EVCODEDEFS.txt)
+  gamereftime  (time subtracted from all game timestamps)
+  deveventsraw
+  deveventscooked
+  devnames  (structure with human-readable dev names indexed by dev label)
+
+
+"(session)-framedata-raw.mat" contains the data table returned by
+readRawFrameData(), without time alignment or timestamp propagation:
+  gameframedata  (data table)
+
+
+"(session)-gazedata-raw.mat" contains the data table returned by
+readRawGazeData(), without time alignment or timestamp propagation:
+  gamegazedata  (data table)
+
+
+"(session)-align.mat" contains the tables returned by alignAllDevices():
+  timetables  (structure with several tables containing timestamp tuples)
+
+
+Note that the event tables and gaze/frame data tables will have to have
+timestamps propagated via a call to propagateAlignedTimestamps().
+
+Note that "deveventscooked" may need to be augmented with the canon list of
+events from "boxevents" by calling augmentEphysEvents().
+
+
+
+Per-session metadata that we do want to revisit:
+
+"(session)-chanmap.mat" contains:
+  chanlabels_raw  (Field Trip channel labels)
+  chanlabels_cooked  (channel labels as used in the experiment analysis)
+
+
+Note that Charlie's convention is to keep the FT channel labels as-is but
+to sort channels in the FT structure based on the cooked labels.
+
+
+"(session)-trialmeta.mat" contains:
+  codesbytrial  (cell array with per-trial event code tables)
+  metabytrial  (struct array returned by getTrialMetadataFromCodes())
+  trialdefs  (Field Trip trial definition matrix plus metadata columns)
+  trialdeftable  (table with "trialdefs" info, plus column names)
+  trial_align_evcode  (event code name used for time zero in trials)
+  trialindices  ("trial index" from the trial definition table)
+  triallabels  (filename-safe trial index labels)
+  trialnames  (human-readable plot-safe trial index names)
+  sessionlabel  (a copy of the filename-safe session label)
+  sessiontitle  (a copy of the human-readable plot-safe session name)
+
+
+Note that the tables in "codesbytrial" are agumented and have timestamps
+propagated from other devices.
+
+Trial definitions were produced by getTrialDefsWide(), which is intended to
+segment entire trials aligned to some common event. Subsequent analyses can
+extract smaller time windows aligned to other features within these large
+segments.
+
+
+
+Per-probe data:
+
+"(session)-(probe)-badinfo.mat" contains:
+  ftlabels_raw  (a copy of ftdata_XX.label)
+  ftlabels_cooked  (cooked channel labels corresponding to ftlabels_raw)
+  triallabels  (filename-safe trial labels, from "trial index")
+  trialnames  (human-readable plot-safe trial names, from "trial index")
+  badchandata (a structure with per-algorithm analysis output structures):
+    log  (raw hand-annotated good and bad channels)
+      good  (cell array with raw labels for hand-annotated good channels)
+      bad  (cell array with raw labels for hand-annotated bad channels)
+    spect  (spectral analysis for bad channel evaluation)
+      freqedges  (frequency band edges)
+      bandpower  (nChans x nBands x ntrials in-band power)
+      tonepower  (nChans x nBands x nTrials log10(max / median) power in-band)
+
+"(session)-(probe)-badlist.mat" contains:
+  badchanmeta (a structure with the following fields:)
+    goodraw  (raw FT channel labels of hand-annotated good channels)
+    badraw  (raw FT channel labels of any-method bad channels)
+    goodcooked  (cooked channel labels of hand-annotated good channels)
+    badcooked  (cooked channel labels of any-method bad channels)
+    ftlabels_raw  (raw channel labels in data order)
+    ftlabels_cooked  (cooked channel labels in data order)
+    goodrawbymethod (structure with per-algorithm raw good channel labels):
+      log  (raw hand-annotated good channels)
+    badrawbymethod (structure with per-algorithm raw bad channel labels):
+      log  (raw hand-annotated bad channels)
+      spect  (raw bad channel labels from spectral analysis)
+
+
+
+Per-trial data:
+
+"(session)-(probe)-(trial)-ephysXXX.mat" contains:
+  ftdata_XXX  (ft_datatype_raw structure with trial ephys data)
+  ftlabels_cooked  (cooked channel labels corresponding to ftdata_raw.label)
+
+XXX values are:
+  raw  (unprocessed ephys data)
+  clean  (ephys data after artifact rejection and notch filtering)
+  wb  (ephys data after re-referencing; reference is from non-bad channels)
+  lfp  (low-pass-filtered ephys data; Local Field Potential)
+  hp  (high-pass-filtered ephys data, for extracting spike shapes)
+  mua  (band-pass/rectified/low-pass ephys data; Multi-Unit Activity)
+
+Note that channels in ftdata_XXX have been sorted in cooked order, despite
+keeping the raw names.
+
+
+
+(This is the end of the file.)

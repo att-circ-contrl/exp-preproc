@@ -1,6 +1,10 @@
 function epIter_afterFunc_badInfoAll( ...
-  outfilepat, wantforce, sessionmeta, probemeta, trialdefmeta, trialresults, configall, wantmsgs )
+  outfilepat, wantforce, sessionmeta, probemeta, trialdefmeta, ...
+  trialresults, configall, wantmsgs )
 
+% function epIter_afterFunc_badInfoAll( ...
+%   outfilepat, wantforce, sessionmeta, probemeta, trialdefmeta, ...
+%   trialresults, configall, wantmsgs )
 %
 % This function aggregates per-trial bad channel information and writes it
 % to a file.
@@ -12,7 +16,7 @@ function epIter_afterFunc_badInfoAll( ...
 %   @(sessionmeta, probemeta, trialdefmeta, ...
 %     beforedata, trialresults, wantmsgs ) ...
 %     epIter_afterFunc_badInfoAll( ...
-%       [ destfolder fileset '%s-%s-badinfo.mat' ], ...
+%       [ destfolder filesep '%s-%s-badinfo.mat' ], ...
 %       want_force_badinfo, sessionmeta, probemeta, trialdefmeta, ...
 %       trialresults, bad_config_struct_all, wantmsgs );
 %
@@ -119,15 +123,16 @@ else
     savedata.ftlabels_cooked = badchansmeta.ftlabels_cooked;
     savedata.triallabels = trialdefmeta.triallabels;
     savedata.trialnames = trialdefmeta.trialnames;
+    savedata.badchandata = struct();
 
     % Individual algorithms' results.
 
     if ~isempty(badchanslog)
-      savedata.badchanslog = badchanslog;
+      savedata.badchandata.log = badchanslog;
     end
 
     if ~isempty(badchansspect)
-      savedata.badchansspect = badchansspect;
+      savedata.badchandata.spect = badchansspect;
     end
 
     save( outfile, '-fromstruct', savedata, '-v7.3' );
