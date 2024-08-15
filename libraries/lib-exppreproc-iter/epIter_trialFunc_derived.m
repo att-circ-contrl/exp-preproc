@@ -27,10 +27,10 @@ function trialresult = epIter_trialFunc_derived( ...
 %   The output file will contain "ftdata_XXX" and "ftlabelscooked", per
 %   PREPROCFILES.txt.
 % "infilepat" is a sprintf pattern used to generate the input file name
-%   for reading raw trials in Field Trip format. This needs three '%s', for
-%   the session label, probe label, and trial label (in that order). The
-%   input file should contain "ftdata_clean" and "ftlabels_cooked", per
-%   PREPROCFILES.txt.
+%   for reading raw trials in Field Trip format. This needs three '%s'
+%   tokens, for the session label, probe label, and trial label (in that
+%   order). The input file should contain "ftdata_clean" and
+%   "ftlabels_cooked", per PREPROCFILES.txt.
 % "wantforce" is true to redo preprocessing even if the output files already
 %   exist, and false to avoid overwriting existing output files.
 % "sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.

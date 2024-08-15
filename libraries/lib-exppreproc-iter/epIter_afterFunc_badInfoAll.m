@@ -29,8 +29,8 @@ function epIter_afterFunc_badInfoAll( ...
 % "probemeta" is a probe definition structure, per PROBEDEFS.txt.
 % "trialdefmeta" is a structure containing all of the variables in the trial
 %   definition metadata file, per PREPROCFILES.txt.
-% "trialresults" is a cell array containing indexed by trial row number that
-%   contains the data variables returned by epIter_trialFunc_badInfoAll().
+% "trialresults" is a cell array indexed by trial row number that contains
+%   the data variables returned by epIter_trialFunc_badInfoAll().
 % "configall" is a configuration structure for bad channel analysis. Each
 %   field corresponds to an algorithm and contains a configuration structure,
 %   per BADCHANCONFIG.txt:
