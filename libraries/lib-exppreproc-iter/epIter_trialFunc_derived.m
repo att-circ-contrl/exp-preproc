@@ -164,12 +164,14 @@ else
     thislabel = derived_wanted{didx};
     outfile = outfilelut.(thislabel);
 
-    if isfield( ftdatalut, thislabel ) && (~exist( outfile, 'file' ))
-      % We have to use "-fromstruct" format inside parfor.
-      savedata = struct();
-      savedata.([ 'ftdata_' thislabel ]) = ftdatalut.(thislabel);
-      savedata.ftlabels_cooked = ftlabels_cooked;
-      save( outfile, '-fromstruct', savedata, '-v7.3' );
+    if isfield( ftdatalut, thislabel )
+      if wantforce || (~exist( outfile, 'file' ))
+        % We have to use "-fromstruct" format inside parfor.
+        savedata = struct();
+        savedata.([ 'ftdata_' thislabel ]) = ftdatalut.(thislabel);
+        savedata.ftlabels_cooked = ftlabels_cooked;
+        save( outfile, '-fromstruct', savedata, '-v7.3' );
+      end
     end
   end
 
