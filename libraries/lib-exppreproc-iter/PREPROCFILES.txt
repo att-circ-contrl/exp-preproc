@@ -111,6 +111,22 @@ Per-probe data:
       log  (raw hand-annotated bad channels)
       spect  (raw bad channel labels from spectral analysis)
 
+"(session)-(probe)-(label)-ephys.mat" contains:
+  ftdata  (ft_datatype_raw structure with event-aligned cropped ephys data)
+  ftlabels_cooked  (cooked channel labels corresponding to ftdata.label)
+
+"(session)-(probe)-(label)-meta.mat" contains:
+  "sessionmeta"  (a single session metadata structure, per SESSIONMETA.txt)
+  "probemeta"  (a probe definition structure, per PROBEDEFS.txt)
+  "ftlabels_raw"  (raw FT labels in data order, with bad channels removed)
+  "ftlabels_cooked"  (cooked FT labels in data order, with bad chans removed)
+  "oldtrialmeta"  (structure with variables from "(session)-trialmeta.mat")
+  "trialmask"  (boolean vector indicating which old trials were kept)
+  "trial_maskedfromorig"  (vector with new trial indices, indexed by old)
+  "trial_origfrommasked"  (vector with old trial indices, indexed by new)
+  "newtrialmeta"  (copy of "oldtrialmeta" with some trials removed, and
+     without "trial_align_evcode", "trialdefs", and "trialdeftable")
+
 
 
 Per-trial data:

@@ -23,7 +23,7 @@ function epIter_afterFunc_epoch( ...
 % "outfilepat_ephys" is a sprintf pattern used to generate the output file
 %   name for saving per-probe merged Field Trip data. This needs two '%s'
 %   tokens, for the session label and probe label (in that order). This
-%   file contains single a variable called "ftdata".
+%   file contains "ftdata" and "ftlabels_cooked", per PREPROCFILES.txt.
 % "outfilepat_meta" is a sprintf pattern used to generate the output file
 %   name for saving metadata for the merged ephys data. This needs two '%s'
 %   tokens, for the session label and probe label (in that order). This file

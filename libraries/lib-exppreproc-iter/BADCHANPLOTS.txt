@@ -1,0 +1,27 @@
+Configuration for plotting bad channel data is specified by a structure with
+the following fields:
+
+"spect" is a configuration structure for plotting spectral band detection
+  data. If this field is absent, no plots are generated.
+
+
+
+Configuration structures for spectral band detection plots have the following
+fields:
+
+"plot_only_average" is true to suppress per-trial plots and false otherwise.
+"plots_wanted" is a cell array with zero or more of the following:
+  'powerbychan' plots in-band power vs channel for each band.
+  'tonebychan' plots relative tone power vs channel for each band.
+  'powerheatmap' plots in-band power vs channel and band, normalized across
+    channels.
+  'toneheatmap' plots relative tone power vs channel and band, normalized
+    across channels.
+  'powerheatband' plots in-band power vs channel and band, normalized across
+    bands.
+  'toneheatband' plots relative tone power vs channel and band, normalized
+    across bands.
+
+
+
+(This is the end of the file.)

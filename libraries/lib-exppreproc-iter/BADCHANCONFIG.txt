@@ -1,0 +1,38 @@
+Iteration functions can perform bad channel detection by several methods.
+
+The methods desired and their configuration parameters are specified by a
+configuration structure with the following fields:
+
+"log" is a structure with configuration for hand-annotated channel lists.
+"spect" is a structure with configuration for spectral band analysis.
+
+
+
+Bad channel detection via hand-annotated channel lists reads lists of good
+and bad channels that were annotated in log files that use Louie's format.
+
+Configuration structures for hand-annotated bad channel parsing have the
+following fields:
+
+"annotated_are_cooked" is true if channel names are cooked (i.e. translated
+  using the channel map), and false if channel names are raw (i.e. the
+  labels listed in ft_datatype_raw structures).
+
+
+
+Bad channel detection via spectral band analysis measures power in several
+frequency bands and looks for channels that are anomalous compared to other
+channels.
+
+Configuration structures for spectral band analysis have the following
+fields (per nlProc_getBandPower and euHLev_guessBadChansFromBandPower):
+
+"freqedges" is a vector with the edge frequencies of the bands to test.
+"bandrange" is the range of in-band power values to accept, in standard
+  deviations.
+"tonerange" is the range of (log-scale) relative tone power values to
+  accept, in standard deviations.
+
+
+
+(This is the end of the file.)
