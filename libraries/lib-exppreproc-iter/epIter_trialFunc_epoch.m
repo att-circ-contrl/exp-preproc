@@ -41,8 +41,10 @@ function trialresult = epIter_trialFunc_epoch( ...
 %   the cropped trials.
 % "wantmsgs" is true to emit console messages and false otherwise.
 %
-% "trialresult" is a ft_datatype_raw structure with the realigned cropped
-%   trial data, or struct([]) if trial data was discarded.
+% "trialresult" is a structure with the following fields, or struct([]) if
+%   trial data was discarded:
+%   "ftdata" is a ft_datatype_raw structure with the realigned cropped trial.
+%   "ftlabels_cooked" has cooked channel labels corresponding to ftdata.label.
 
 
 % Set the return value.
@@ -79,6 +81,7 @@ else
   else
 
     ftdata_trial = ftfiledata.(ftvarname);
+    ftlabels_raw = ftdata_trial.label;
     ftlabels_cooked = ftfiledata.ftlabels_cooked;
 
     oldtrigtime = trialdefmeta.trialdeftable.timetrigger(tidx);
@@ -133,7 +136,13 @@ else
           disp( '###  Segmented trial data has no trial!' );
         end
       else
-        trialresult = ftdata_trial;
+        trialresult = struct();
+        trialresult.ftdata = ftdata_trial;
+
+        % We may be using only a subset of the channels, so don't just
+        % copy the old ftlabels_cooked.
+        trialresult.ftlabels_cooked = nlFT_mapChannelLabels( ...
+          ftdata_trial.label, ftlabels_raw, ftlabels_cooked );
       end
 
     end

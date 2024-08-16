@@ -33,8 +33,9 @@ function epIter_afterFunc_epoch( ...
 % "trialdefmeta" is a structure containing all of the variables in the trial
 %   definition metadata file, per PREPROCFILES.txt.
 % "trialresults" is a cell array indexed by trial row number that contains
-%   the ft_datatype_raw structures returned by epIter_trialFunc_epoch().
-%   These will be struct([]) for trials that were dropped.
+%   the structures returned by epIter_trialFunc_epoch(). These contain
+%   "ftdata" and "ftlabels_cooked" fields. The structures will be struct([])
+%   for trials that were dropped.
 % "wantmsgs" is true to emit console messages and false otherwise.
 %
 % No return value.
@@ -58,12 +59,20 @@ ftdata_aggregate = struct([]);
 
 is_first_trial = true;
 
-for tidx = 1:trialcount
-  ftdata_trial = trialresults{tidx};
+ftlabels_raw = {};
+ftlabels_cooked = {};
 
-  if isempty(ftdata_trial)
+for tidx = 1:trialcount
+  thisresult = trialresults{tidx};
+
+  if isempty(thisresult)
     trialmask(tidx) = false;
   else
+
+    ftdata_trial = thisresult.ftdata;
+
+    ftlabels_raw = ftdata_trial.label;
+    ftlabels_cooked = thisresult.ftlabels_cooked;
 
     if wantmsgs
       disp(sprintf( '.. Merging trial %d/%d (%s).', ...
@@ -128,6 +137,9 @@ savedata.trial_origfrommasked = trial_origfrommasked;
 savedata.sessionmeta = sessionmeta;
 savedata.probemeta = probemeta;
 
+savedata.ftlabels_raw = ftlabels_raw;
+savedata.ftlabels_cooked = ftlabels_cooked;
+
 save( outfile_meta, '-fromstruct', savedata, '-v7.3' );
 
 
@@ -139,6 +151,7 @@ end
 
 savedata = struct();
 savedata.ftdata = ftdata_aggregate;
+savedata.ftlabels_cooked = ftlabels_cooked;
 
 save( outfile_ft, '-fromstruct', savedata, '-v7.3' );
 

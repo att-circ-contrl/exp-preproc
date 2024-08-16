@@ -84,7 +84,7 @@ segments.
 Per-probe data:
 
 "(session)-(probe)-badinfo.mat" contains:
-  ftlabels_raw  (a copy of ftdata_XX.label)
+  ftlabels_raw  (a copy of ftdata_XXX.label)
   ftlabels_cooked  (cooked channel labels corresponding to ftlabels_raw)
   triallabels  (filename-safe trial labels, from "trial index")
   trialnames  (human-readable plot-safe trial names, from "trial index")
@@ -117,7 +117,7 @@ Per-trial data:
 
 "(session)-(probe)-(trial)-ephysXXX.mat" contains:
   ftdata_XXX  (ft_datatype_raw structure with trial ephys data)
-  ftlabels_cooked  (cooked channel labels corresponding to ftdata_raw.label)
+  ftlabels_cooked  (cooked channel labels corresponding to ftdata_XXX.label)
 
 XXX values are:
   raw  (unprocessed ephys data)
