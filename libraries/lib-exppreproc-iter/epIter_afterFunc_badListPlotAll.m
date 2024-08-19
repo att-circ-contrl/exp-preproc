@@ -150,10 +150,12 @@ else
       % Render the plots.
       % This handles normalization.
 
+      annotated_chans = badlists.badcooked;
+
       euPlot_hlevPlotBandPower( bandpower, tonepower, 'twosided', ...
         thisinfo.freqedges, ftlabels_cooked, thistriallist, ...
         [], [], thisconfig.plots_wanted, ...
-        [ sessiontitle ' - ' probetitle ], outprefix );
+        [ sessiontitle ' - ' probetitle ], outprefix, annotated_chans );
     end
   end
 

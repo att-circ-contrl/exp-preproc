@@ -38,16 +38,20 @@ their own README files.
 Libraries are provided as subfolders in the `libraries` folder. With that
 folder on path, call `addPathsExpPreproc` to add sub-folders.
 
-Library folders are:
+Library sub-folders are:
 
-_(Documentation NYI.)_
+* `lib-exppreproc-iter` --
+High-level entry-point function that iterates through sessions, probes, and
+trials, and helper functions that perform various preprocessing tasks.
+
+_(Ported ExpUtils subfolders NYI.)_
 
 
 
-## Sample Code Folders
+## Sample Code Folder
 
-Sample code suitable for reference is in the following folders. Most
-folders also have a README file describing the sample code.
+Sample code suitable for reference is in the `code-examples` folder. This
+includes the following files:
 
 _(NYI)_
 
