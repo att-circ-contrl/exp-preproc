@@ -92,6 +92,8 @@ Per-probe data:
     log  (raw hand-annotated good and bad channels)
       good  (cell array with raw labels for hand-annotated good channels)
       bad  (cell array with raw labels for hand-annotated bad channels)
+    force
+      bad  (raw list of channels to store in "badraw", ignoring methods)
     spect  (spectral analysis for bad channel evaluation)
       freqedges  (frequency band edges)
       bandpower  (nChans x nBands x ntrials in-band power)
@@ -109,6 +111,7 @@ Per-probe data:
       log  (raw hand-annotated good channels)
     badrawbymethod (structure with per-algorithm raw bad channel labels):
       log  (raw hand-annotated bad channels)
+      force  (raw list of channels to store in "badraw", ignoring methods)
       spect  (raw bad channel labels from spectral analysis)
 
 "(session)-(probe)-(label)-ephys.mat" contains:

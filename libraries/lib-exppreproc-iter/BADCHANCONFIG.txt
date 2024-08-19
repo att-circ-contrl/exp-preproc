@@ -4,6 +4,7 @@ The methods desired and their configuration parameters are specified by a
 configuration structure with the following fields:
 
 "log" is a structure with configuration for hand-annotated channel lists.
+"force" is a structure with configuration for forced channel list overrides.
 "spect" is a structure with configuration for spectral band analysis.
 
 
@@ -12,6 +13,18 @@ Bad channel detection via hand-annotated channel lists reads lists of good
 and bad channels that were annotated in log files that use Louie's format.
 
 Configuration structures for hand-annotated bad channel parsing have the
+following fields:
+
+"annotated_are_cooked" is true if channel names are cooked (i.e. translated
+  using the channel map), and false if channel names are raw (i.e. the
+  labels listed in ft_datatype_raw structures).
+
+
+
+Bad channel list overrides replace the final bad channel list with a user-
+-supplied list.
+
+Configuration structures for user-specified bad channel lists have the
 following fields:
 
 "annotated_are_cooked" is true if channel names are cooked (i.e. translated

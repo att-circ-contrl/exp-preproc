@@ -96,6 +96,13 @@ else
   end
 
 
+  % Copy the forced-override channels.
+
+  if ismember('force', methodlist)
+    badrawbymethod.force = badinfo.badchandata.force.bad;
+  end
+
+
   % Evaluate spectrum analysis results.
 
   if ismember('spect', methodlist)
@@ -137,6 +144,11 @@ else
     thislist = sort( intersect( ftlabels_raw, thislist ) );
     badrawbymethod.(thismethod) = thislist;
     badraw = [ badraw ; reshape( thislist, [], 1 ) ];
+  end
+
+  % NOTE - Special-case the "force override" method.
+  if isfield( badrawbymethod, 'force' )
+    badraw = badrawbymethod.force;
   end
 
   goodraw = unique(goodraw);

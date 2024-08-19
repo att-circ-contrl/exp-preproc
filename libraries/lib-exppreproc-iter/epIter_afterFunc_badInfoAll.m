@@ -1,10 +1,10 @@
 function epIter_afterFunc_badInfoAll( ...
   outfilepat, wantforce, sessionmeta, probemeta, trialdefmeta, ...
-  trialresults, configall, wantmsgs )
+  trialresults, configall, badforcelist, wantmsgs )
 
 % function epIter_afterFunc_badInfoAll( ...
 %   outfilepat, wantforce, sessionmeta, probemeta, trialdefmeta, ...
-%   trialresults, configall, wantmsgs )
+%   trialresults, configall, badforcelist, wantmsgs )
 %
 % This function aggregates per-trial bad channel information and writes it
 % to a file.
@@ -18,7 +18,7 @@ function epIter_afterFunc_badInfoAll( ...
 %     epIter_afterFunc_badInfoAll( ...
 %       [ destfolder filesep '%s-%s-badinfo.mat' ], ...
 %       want_force_badinfo, sessionmeta, probemeta, trialdefmeta, ...
-%       trialresults, bad_config_struct_all, wantmsgs );
+%       trialresults, bad_config_struct_all, bad_force_lut, wantmsgs );
 %
 % "outfilepat" is a sprintf pattern used to generate the output file name
 %   for saving per-probe bad channel information. This needs two '%s' tokens,
@@ -35,7 +35,14 @@ function epIter_afterFunc_badInfoAll( ...
 %   field corresponds to an algorithm and contains a configuration structure,
 %   per BADCHANCONFIG.txt:
 %   "log" contains configuration information for hand-annotated log entries.
+%   "force" contains configuration for forced-override bad channel lists.
 %   "spect" contains configuration information for spectral analysis.
+% "badforcelist" is either a cell array or a structure. If it's a cell array,
+%   it contains a list of (raw or cooked) FT channel labels that are known
+%   to be bad and that should override the aggregated bad channel list. If
+%   it's a struct, then badforcelist.(session).(probe) contains a cell
+%   array of bad channels. If "badforcelist" is a structure but the relevant
+%   session or probe field is absent, no override is performed.
 % "wantmsgs" is true to emit console messages and false otherwise.
 %
 % No return value.
@@ -51,6 +58,29 @@ if (~wantforce) && exist(outfile, 'file')
   end
 else
 
+  % See if we have an override list.
+
+  badchanlistoverride = {};
+  wantoverride = false;
+
+  if iscell(badforcelist)
+    badchanlistoverride = badforcelist;
+    wantoverride = true;
+  elseif isstruct(badforcelist)
+    if isfield(badforcelist, sessionmeta.sessionlabel)
+      scratch = badforcelist.(sessionmeta.sessionlabel);
+      if isfield(scratch, probemeta.label)
+        badchanlistoverride = scratch.(probemeta.label);
+        wantoverride = true;
+      end
+    end
+  end
+
+  wantoverride = wantoverride & isfield( configall, 'force' );
+
+
+  % Aggregate per-trial information.
+
   badchansmeta = struct([]);
   badchanslog = struct([]);
   badchansspect = struct([]);
@@ -59,7 +89,6 @@ else
 
   have_log = isfield( configall, 'log' );
   have_spect = isfield( configall, 'spect' );
-
 
   for tidx = 1:trialcount
 
@@ -134,6 +163,25 @@ else
     if ~isempty(badchansspect)
       savedata.badchandata.spect = badchansspect;
     end
+
+
+    if wantoverride
+      % Turn this back into a raw list if it isn't already one.
+      if configall.force.annotated_are_cooked
+        badchanlistoverride = nlFT_mapChannelLabels( badchanlistoverride, ...
+          badchansmeta.ftlabels_cooked, badchansmeta.ftlabels_raw );
+      end
+
+      % Mask out anything that isn't in this probe.
+      badchanlistoverride = sort( intersect( badchansmeta.ftlabels_raw, ...
+        badchanlistoverride ) );
+
+      % Store the override list.
+      scratch = struct();
+      scratch.bad = badchanlistoverride;
+      savedata.badchandata.force = scratch;
+    end
+
 
     save( outfile, '-fromstruct', savedata, '-v7.3' );
 

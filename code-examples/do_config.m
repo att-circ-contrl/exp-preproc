@@ -8,6 +8,9 @@
 % Whether to skip or force-renegerate output files that are already present.
 want_force_redo = true;
 
+% Whether to auto-detect bad channels (the alternative is to use a list).
+want_detect_badchans = true;
+
 % Whether to emit messages to the console.
 want_messages = true;
 
@@ -146,6 +149,11 @@ gaze_samprate = downsampled_rate;
 badconfiglog = struct( 'annotated_are_cooked', true );
 
 
+% Manual override bad channel lists.
+
+badconfigforce = struct( 'annotated_are_cooked', true );
+
+
 % Spectral detection via nlProc_getBandPower().
 
 % If the frequency bins are wider than an octave, low frequencies will
@@ -174,6 +182,7 @@ badconfigspect.tonerange = [ -inf 1.5 ];
 
 badconfigall = struct();
 badconfigall.log = badconfiglog;
+badconfigall.force = badconfigforce;
 badconfigall.spect = badconfigspect;
 
 
