@@ -17,6 +17,9 @@ want_messages = true;
 % Which derived ephys signals to generate.
 derived_wanted = { 'wb', 'hp', 'lfp', 'mua' };
 
+% Which signals to generate epoched data for.
+epoch_sigs_wanted = { 'mua', 'lfp' };
+
 % Whether to use the Parallel Computing Toolbox.
 want_parallel = false;
 
@@ -52,6 +55,7 @@ debug_few_trials = true;
 plotdir = 'plots';
 sessiondir = 'data-sessions';
 trialdir = 'data-trials';
+epochdir = 'data-epoched';
 
 
 % Sample input. This is from the Frey/Wotan FLToken dataset.
@@ -83,6 +87,21 @@ trial_prune_method = 'strict';
 % Chalie used 'FixCentralCueStart'.
 
 trial_align_evcode = 'FixCentralCueStart';
+
+
+
+%
+% Epoch parameters.
+
+% This should be one of the metadata fields in "metabytrial" from
+% "XXX-trialmeta.mat". Typical fields are 'lastfixationstart',
+% 'lastfixationend', 'tokentime', 'correcttime', and 'rewardtime'.
+% Metadata was extracted from evcodes by "euMeta_getTrialMetadataFromCodes".
+
+epoch_align_feature = 'lastfixationstart';
+
+% The ROI is -0.75 sec to +1.5 sec. We're padding a bit.
+epoch_timespan_sec = [ -1 2 ];
 
 
 
