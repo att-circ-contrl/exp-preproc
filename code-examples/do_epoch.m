@@ -76,7 +76,104 @@ for sigidx = 1:length(epoch_sigs_wanted)
     beforefunc, afterfunc, trialfunc, want_parallel, want_messages );
 
 
+  %
+  % Make plots if requested.
+
+  beforefunc = @(sessionmeta, probemeta, trialdefmeta, wantmsgs) ...
+    helper_plotEpochData( ...
+      sprintf( [ epochdir filesep '%s-%s-' thissig '-ephys.mat' ], ...
+        sessionmeta.sessionlabel, probemeta.label ), ...
+      sprintf( [ epochdir filesep '%s-%s-' thissig '-meta.mat' ], ...
+        sessionmeta.sessionlabel, probemeta.label ), ...
+      plotdir, thissig, plotconfig_epoch, wantmsgs );
+
+  if plotconfig_epoch.want_timelock || plotconfig_epoch.want_trials
+    epIter_processSessions( sessionlist, ...
+      [ sessiondir filesep '%s-trialmeta.mat' ], ...
+      beforefunc, NaN, NaN, want_parallel, want_messages );
+  end
+
+
+  % Ending banner.
+
   disp([ '== Finished processing "' thissig '".' ]);
+
+end
+
+
+
+%
+% Helper functions.
+
+
+function retval = helper_plotEpochData( ...
+  ephysfile, metafile, plotfolder, siglabel, plotconfig, wantmsgs )
+
+  % Return value isn't used, so set it to NaN.
+  retval = NaN;
+
+
+  % This has "ftdata" and "ftlabels_cooked".
+  load(ephysfile);
+
+  % Swap in cooked lables for plotting.
+  ftdata.label = ftlabels_cooked;
+
+
+  % This has metadata variables per PREPROCFILES.txt.
+  % Put them all into a structure for convenience.
+  epochmeta = load(metafile);
+
+  % Unpack some of the metadata.
+  sessionlabel = epochmeta.sessionmeta.sessionlabel;
+  sessiontitle = epochmeta.sessionmeta.sessiontitle;
+  probelabel = epochmeta.probemeta.label;
+  probetitle = epochmeta.probemeta.title;
+  trialtitles = epochmeta.newtrialmeta.trialnames;
+
+  % Reasonable plotting defaults.
+  plotsigma = 2.0;
+  zoomranges = {[]};
+  zoomlabels = {'wide'};
+
+
+  if plotconfig.want_timelock
+    % Generate timelock data.
+    % We need to force alignment sanity first.
+
+    ftdata = nlFT_roundTrialTimestamps( ftdata );
+    fttimelock = ft_timelockanalysis( struct(), ftdata );
+
+
+    % Render the plots.
+
+    if wantmsgs
+      disp('-- Plotting time-locked data.');
+    end
+
+    euPlot_plotFTTimelock( fttimelock, ...
+      plotsigma, plotconfig.timelock_types, zoomranges, zoomlabels, ...
+      plotconfig.max_plots, ...
+      [ sessiontitle ' - ' probetitle ' - ' siglabel ], ...
+      [ plotfolder filesep 'timelock-' sessionlabel '-' probelabel ...
+        '-' siglabel ] );
+  end
+
+
+  if plotconfig.want_trials
+    % Render the plots.
+
+    if wantmsgs
+      disp('-- Plotting trials.');
+    end
+
+    euPlot_plotFTTrials( ftdata, ftdata.fsample, [], ...
+      trialtitles, NaN, struct(), NaN, plotconfig.trial_types, ...
+      zoomranges, zoomlabels, plotconfig.max_plots, ...
+      [ sessiontitle ' - ' probetitle ' - ' siglabel ], ...
+      [ plotfolder filesep 'trials-' sessionlabel '-' probelabel ...
+        '-' siglabel ] );
+  end
 
 end
 

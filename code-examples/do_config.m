@@ -36,6 +36,24 @@ badplotconfigall.spect.plots_wanted = ...
     'powerheatdual', 'toneheatdual' };
 
 
+% Which plots to make for epoched data.
+
+plotconfig_epoch = struct();
+plotconfig_epoch.want_timelock = true;
+plotconfig_epoch.want_trials = true;
+
+% Maximum number of plots of any given type to generate.
+% For strip-charts, this gives the number of trials plotted.
+plotconfig_epoch.max_plots = 6;
+
+% Options are 'oneplot', 'perchannel', and 'stripchart'.
+plotconfig_epoch.timelock_types = { 'stripchart' };
+
+% Options are 'oneplot', 'perchannel', and 'pertrial'.
+% None of these are particularly useful. 'stripchart' _is_ useful.
+plotconfig_epoch.trial_types = { 'stripchart' };
+
+
 % The specific session to use (we'll discard the other sessions for the
 % demo).
 %debug_specific_sessions = {};
