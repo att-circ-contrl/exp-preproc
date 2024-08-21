@@ -1,0 +1,99 @@
+% Preprocessing pipeline libraries - Library reference - Top level
+% Written by Christopher Thomas.
+
+\documentclass[letterpaper,11pt]{report}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{placeins}
+\usepackage{longtable}
+
+\geometry{nohead,footskip=0.3in,margin=0.75in}
+
+% Force my paragraph style, darnit.
+\usepackage{indentfirst}
+\setlength{\parskip}{\baselineskip}
+
+% NOTE - "\thispagestyle" is used for part and chapter beginning pages, and
+% overrides \pagestyle. Redefine it to be harmless.
+% NOTE - The canonical solution ("\pagenumbering{gobble}") resets the page
+% counter whenever it's used.
+\renewcommand{\thispagestyle}[1]{}
+
+% Custom macros.
+\newcommand{\fixme}[1]{\textbf{FIXME: #1}}
+
+\newcommand{\figdef}[3]
+{\begin{figure}[htb]
+\begin{center}#1\end{center}
+\caption{#2}\label{#3}\end{figure}}
+
+\newcommand{\tabdef}[3]
+{\begin{table}[hb]
+\begin{center}#1\end{center}
+\caption{#2}\label{#3}\end{table}}
+
+% Document body.
+\begin{document}
+%
+% Title page.
+%
+\pagestyle{empty}
+
+\begin{center}
+%
+\vspace*{1in}
+{\LARGE Preprocessing Pipeline Libraries -- Function Reference} \\
+{\footnotesize Written by Christopher Thomas -- \today.}
+%
+\vspace*{1in}\\
+\begin{tabular}{cc}
+\includegraphics[width=3in]{plots/0713-prCD1-inband-normchan} &
+\includegraphics[width=3in]{plots/0713-prCD1-inband-normband} \\
+\end{tabular}
+%
+\end{center}
+%
+\vfill
+{\tiny \input{../LICENSE.md}}
+%
+\clearpage
+%
+%
+% Front matter.
+%
+% NOTE - Putting the overview before the TOC!
+%
+\pagestyle{plain}
+\pagenumbering{roman}
+\setcounter{page}{1}
+%
+\input{epp-libs-over}
+\clearpage
+%
+\tableofcontents
+\clearpage
+%
+%
+% Document parts.
+%
+\pagestyle{plain}
+\setcounter{page}{1}
+\pagenumbering{arabic}
+%
+\part{Examples}
+\label{sect-samples}
+%
+\input{epp-libs-sample-preproc}
+%
+\part{Library Functions}
+\label{sect-libs}
+%
+\input{epp-libs-iter-notes}
+\input{epp-libs-iter}
+%
+%
+\end{document}
+
+%
+% This is the end of the file.

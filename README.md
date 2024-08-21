@@ -62,7 +62,7 @@ includes the following files:
 * `do_config.m` specifies where to find the raw ephys datasets, and specifies
 configuration information for each of the preprocessing operations.
 * `do_sessionmeta.m` reads ephys headers and auxiliary files (game files),
-builds event lists and trial definitions, and saves all of the metadata in
+builds event lists and trial definitions, and saves all of this metadata in
 a consolidated format.
 * `do_preproc.m` reads the raw ephys datasets, performs several preprocessing
 steps, and saves the results of each step in Field Trip format. Preprocessing
@@ -71,12 +71,13 @@ and filtering/rectification/downsampling to produce derived signals.
 * `do_epoch.m` reads per-trial Field Trip files, time-aligns them to desired
 events, and crops them to a region of interest around these events.
 * `do_manual_badchans.m` provides manual lists of bad channels. These can be
-used instead of automatically-detected bad channels (by setting a flag in
+used instead of automatically-detected bad channels (by changing a flag in
 `do_config.m`).
 
 To run the demo code, make sure that the configuration file points to the
 FLToken dataset, make sure that all needed libraries are on Matlab's path,
-and type "make allclean", "make session", "make preproc", and "make epoch".
+and from a Linux or MacOS command line type "make allclean", "make session",
+"make preproc", and "make epoch".
 
 Two steps will produce plots: Pre-processing will produce bad channel
 analysis plots, and epoching will produce strip-charts of timelocked data
@@ -84,11 +85,11 @@ and per-trial waveform data (for a small number of trials). Type "make
 gallery" to build a `gallery.html` file in the plot folder showing these
 plots.
 
-The `make` command should work under Linux and from the MacOS command
-terminal. To run the scripts from the Matlab GUI, you'll have to manually
-make several sub-folders (`data-sessions`, `data-trials`, `data-epoched`,
-`plots`), and then run the `do_sessionmeta.m`, `do_preproc.m`, and
-`do_epoch.m` scripts to perform the preprocessing steps.
+The `make` command should work from a command terminal under Linux and
+MacOS. To run the scripts from the Matlab GUI instead, manually make several
+sub-folders (`data-sessions`, `data-trials`, `data-epoched`, `plots`), and
+then run the `do_sessionmeta.m`, `do_preproc.m`, and `do_epoch.m` scripts to
+perform the preprocessing steps.
 
 
 _(This is the end of the file.)_
