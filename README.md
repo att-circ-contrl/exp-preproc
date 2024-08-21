@@ -48,10 +48,14 @@ _(Ported ExpUtils subfolders NYI.)_
 
 This library requires the following other libraries:
 * Field Trip
+	This is at: <https://github.com/fieldtrip/fieldtrip>
 * Open Ephys's "analysis tools" library.
+	This is at: <https://github.com/open-ephys/analysis-tools>
 * The `npy-matlab` library (needed by Open Ephys's library; it comes with it).
 * The `LoopUtil` library from our lab's GitHub page.
+	This is at: <https://github.com/att-circ-contrl/LoopUtil>
 * The `exp-utils-cjt` library from our lab's GitHub page.
+	This is at: <https://github.com/att-circ-contrl/exp-utils-cjt>
 
 
 ## Sample Code Folder
