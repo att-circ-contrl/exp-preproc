@@ -33,7 +33,7 @@ epoch: checkdirs
 		-r "dbstop if error; run('do_epoch.m'); exit;"
 
 
-gallery: gallery4
+gallery: gallery6
 
 gallery3:
 	sync

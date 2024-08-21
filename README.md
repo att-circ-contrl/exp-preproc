@@ -46,6 +46,12 @@ trials, and helper functions that perform various preprocessing tasks.
 
 _(Ported ExpUtils subfolders NYI.)_
 
+This library requires the following other libraries:
+* Field Trip
+* Open Ephys's "analysis tools" library.
+* The `npy-matlab` library (needed by Open Ephys's library; it comes with it).
+* The `LoopUtil` library from our lab's GitHub page.
+* The `exp-utils-cjt` library from our lab's GitHub page.
 
 
 ## Sample Code Folder
@@ -53,7 +59,36 @@ _(Ported ExpUtils subfolders NYI.)_
 Sample code suitable for reference is in the `code-examples` folder. This
 includes the following files:
 
-_(NYI)_
+* `do_config.m` specifies where to find the raw ephys datasets, and specifies
+configuration information for each of the preprocessing operations.
+* `do_sessionmeta.m` reads ephys headers and auxiliary files (game files),
+builds event lists and trial definitions, and saves all of the metadata in
+a consolidated format.
+* `do_preproc.m` reads the raw ephys datasets, performs several preprocessing
+steps, and saves the results of each step in Field Trip format. Preprocessing
+steps are segmentation into trials, artifact removal, bad channel detection,
+and filtering/rectification/downsampling to produce derived signals.
+* `do_epoch.m` reads per-trial Field Trip files, time-aligns them to desired
+events, and crops them to a region of interest around these events.
+* `do_manual_badchans.m` provides manual lists of bad channels. These can be
+used instead of automatically-detected bad channels (by setting a flag in
+`do_config.m`).
+
+To run the demo code, make sure that the configuration file points to the
+FLToken dataset, make sure that all needed libraries are on Matlab's path,
+and type "make allclean", "make session", "make preproc", and "make epoch".
+
+Two steps will produce plots: Pre-processing will produce bad channel
+analysis plots, and epoching will produce strip-charts of timelocked data
+and per-trial waveform data (for a small number of trials). Type "make
+gallery" to build a `gallery.html` file in the plot folder showing these
+plots.
+
+The `make` command should work under Linux and from the MacOS command
+terminal. To run the scripts from the Matlab GUI, you'll have to manually
+make several sub-folders (`data-sessions`, `data-trials`, `data-epoched`,
+`plots`), and then run the `do_sessionmeta.m`, `do_preproc.m`, and
+`do_epoch.m` scripts to perform the preprocessing steps.
 
 
 _(This is the end of the file.)_
