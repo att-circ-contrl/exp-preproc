@@ -22,7 +22,7 @@ following fields:
 
 
 Bad channel list overrides replace the final bad channel list with a user-
--supplied list.
+-supplied list, per epIter_afterFunc_badInfoAll().
 
 Configuration structures for user-specified bad channel lists have the
 following fields:

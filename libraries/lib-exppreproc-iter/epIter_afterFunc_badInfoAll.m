@@ -40,7 +40,7 @@ function epIter_afterFunc_badInfoAll( ...
 % "badforcelist" is either a cell array or a structure. If it's a cell array,
 %   it contains a list of (raw or cooked) FT channel labels that are known
 %   to be bad and that should override the aggregated bad channel list. If
-%   it's a struct, then badforcelist.(session).(probe) contains a cell
+%   it's a structure, then badforcelist.(session).(probe) contains a cell
 %   array of bad channels. If "badforcelist" is a structure but the relevant
 %   session or probe field is absent, no override is performed.
 % "wantmsgs" is true to emit console messages and false otherwise.

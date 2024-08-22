@@ -7,7 +7,7 @@ function badliststruct = ...
 % This function reads a bad channel list metadata file and returns its
 % contents in a structure.
 %
-% This is intended to be called as a "prebebeforefunc" function, per
+% This is intended to be called as a "probebeforefunc" function, per
 % ITERFUNCS.txt. A typical implementation would be:
 %
 % beforefunc = @(sessionmeta, probemeta, trialdefmeta, wantmsgs) ...
