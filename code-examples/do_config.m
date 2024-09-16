@@ -24,6 +24,17 @@ epoch_sigs_wanted = { 'mua', 'lfp' };
 want_parallel = false;
 
 
+% Which processing steps to perform.
+% This lets you keep the output of earlier processing steps if you want to
+% redo later processing steps.
+
+want_do_segment = true;
+want_do_sigcondition = true;
+want_do_analyze_badchans = true;
+want_do_list_badchans = true;
+want_do_derived_signals = true;
+
+
 % Which plots to make for bad channel detection.
 
 badplotconfigall = struct();
@@ -221,6 +232,13 @@ badconfigall = struct();
 badconfigall.log = badconfiglog;
 badconfigall.force = badconfigforce;
 badconfigall.spect = badconfigspect;
+
+
+
+%
+% Load the actual hand-annotated bad channel lists.
+
+badchansbyhand = euMeta_getBadChannels_FLToken_2022_2023;
 
 
 

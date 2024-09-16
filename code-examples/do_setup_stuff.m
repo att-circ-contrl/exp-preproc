@@ -13,7 +13,6 @@ do_paths;
 % Some of this calls library functions, so we need the paths.
 
 do_config;
-do_manual_badchans;
 
 
 %
