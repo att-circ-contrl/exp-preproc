@@ -13,7 +13,7 @@ do_setup_stuff;
 % Read global metadata.
 
 infile = [ sessiondir filesep 'dataset-meta.mat' ];
-if ~exist(infile)
+if ~exist(infile, 'file')
   disp('###  Can''t find global metadata. Bailing out.');
   edit;
 else
