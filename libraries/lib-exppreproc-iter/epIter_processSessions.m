@@ -15,7 +15,7 @@ function epIter_processSessions( sessionlist, trialmetafilepat, ...
 %
 % "sessionlist" is a struct array with session metadata, per SESSIONMETA.txt.
 % "trialmetafilepat" is a sprintf pattern used when building per-session
-%   trial metadata filenames. The pattern should have the form
+%   trial metadata filenames to read. The pattern should have the form
 %   'prefix-%s-suffix.mat', where '%s' is replaced with the session label.
 %   This is typically '(folder)/%s-trialmeta.mat'.
 % "probefuncbefore" is a function handle that's called during probe iteration,

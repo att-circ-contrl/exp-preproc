@@ -24,10 +24,12 @@ function epIter_afterFunc_epoch( ...
 %   name for saving per-probe merged Field Trip data. This needs two '%s'
 %   tokens, for the session label and probe label (in that order). This
 %   file contains "ftdata" and "ftlabels_cooked", per PREPROCFILES.txt.
+%   Generating names that include subfolders is fine.
 % "outfilepat_meta" is a sprintf pattern used to generate the output file
 %   name for saving metadata for the merged ephys data. This needs two '%s'
 %   tokens, for the session label and probe label (in that order). This file
 %   contains several metadata structures, per PREPROCFILES.txt.
+%   Generating names that include subfolders is fine.
 % "sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
 % "probemeta" is a probe definition structure, per PROBEDEFS.txt.
 % "trialdefmeta" is a structure containing all of the variables in the trial
@@ -47,6 +49,9 @@ outfile_ft = ...
   sprintf( outfilepat_ephys, sessionmeta.sessionlabel, probemeta.label );
 outfile_meta = ...
   sprintf( outfilepat_meta, sessionmeta.sessionlabel, probemeta.label );
+
+nlUtil_makeSureFolderExists(outfile_ft);
+nlUtil_makeSureFolderExists(outfile_meta);
 
 trialcount = length(trialresults);
 trialmask = true([ trialcount 1 ]);

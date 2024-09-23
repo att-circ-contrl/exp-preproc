@@ -25,7 +25,7 @@ function trialresult = epIter_trialFunc_derived( ...
 %   for saving Field Trip data. This needs four '%s' tokens, for the
 %   session label, probe label, trial label, and signal type (in that order).
 %   The output file will contain "ftdata_XXX" and "ftlabelscooked", per
-%   PREPROCFILES.txt.
+%   PREPROCFILES.txt. Generating names that include subfolders is fine.
 % "infilepat" is a sprintf pattern used to generate the input file name
 %   for reading raw trials in Field Trip format. This needs three '%s'
 %   tokens, for the session label, probe label, and trial label (in that
@@ -73,9 +73,12 @@ derived_wanted = intersect( derived_wanted, { 'wb', 'lfp', 'hp', 'mua' } );
 
 outfilelut = struct();
 for didx = 1:length(derived_wanted)
-  outfilelut.(derived_wanted{didx}) = ...
+  thisfile = ...
     sprintf( outfilepat, sessionmeta.sessionlabel, probemeta.label, ...
       trialdefmeta.triallabels{tidx}, derived_wanted{didx} );
+
+  outfilelut.(derived_wanted{didx}) = thisfile;
+  nlUtil_makeSureFolderExists(thisfile);
 end
 
 % See if we already have all of the derived signals.

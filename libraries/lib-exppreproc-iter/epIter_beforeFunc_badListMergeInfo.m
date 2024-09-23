@@ -22,7 +22,8 @@ function badliststruct = epIter_beforeFunc_badListMergeInfo( ...
 %
 % "outfilepat" is a sprintf pattern used to generate the output file name
 %   for saving per-probe bad channel lists. This needs two '%s' tokens,
-%   for the session label and probe label (in that order).
+%   for the session label and probe label (in that order). Generating names
+%   that include subfolders is fine.
 % "infilepat" is a sprintf pattern used to generate the input file name
 %   for reading per-probe bad channel analysis output. This needs two '%s'
 %   tokens, for the session label and probe label (in that order).
@@ -58,6 +59,7 @@ badliststruct = struct([]);
 outfile = sprintf( outfilepat, sessionmeta.sessionlabel, probemeta.label );
 infile = sprintf( infilepat, sessionmeta.sessionlabel, probemeta.label );
 
+nlUtil_makeSureFolderExists(outfile);
 
 
 if (~wantforce) && exist(outfile, 'file')

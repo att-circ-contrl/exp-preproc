@@ -22,7 +22,8 @@ function epIter_afterFunc_badInfoAll( ...
 %
 % "outfilepat" is a sprintf pattern used to generate the output file name
 %   for saving per-probe bad channel information. This needs two '%s' tokens,
-%   for the session label and probe label (in that order).
+%   for the session label and probe label (in that order). Generating names
+%   that include subfolders is fine.
 % "wantforce" is true to redo processing even if the output file already
 %   exists, and false to skip processing if the output file is present.
 % "sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
@@ -50,6 +51,8 @@ function epIter_afterFunc_badInfoAll( ...
 
 % Output file only has two labels, not three.
 outfile = sprintf( outfilepat, sessionmeta.sessionlabel, probemeta.label );
+
+nlUtil_makeSureFolderExists(outfile);
 
 
 if (~wantforce) && exist(outfile, 'file')

@@ -28,7 +28,7 @@ function trialresult = epIter_trialFunc_sigclean( ...
 %   for saving Field Trip data. This needs three '%s' tokens, for the
 %   session label, probe label, and trial label (in that order). The output
 %   file will contain "ftdata_clean" and "ftlabels_cooked", per
-%   PREPROCFILES.txt.
+%   PREPROCFILES.txt. Generating names that include subfolders is fine.
 % "infilepat" is a sprintf pattern used to generate the input file name
 %   for reading raw trials in Field Trip format. This needs three '%s'
 %   tokens, as with "outfilepat". The input file should contain "ftdata_raw"
@@ -62,6 +62,8 @@ trialresult = NaN;
 
 outfile = sprintf( outfilepat, sessionmeta.sessionlabel, ...
   probemeta.label, trialdefmeta.triallabels{tidx} );
+
+nlUtil_makeSureFolderExists(outfile);
 
 infile = sprintf( infilepat, sessionmeta.sessionlabel, ...
   probemeta.label, trialdefmeta.triallabels{tidx} );

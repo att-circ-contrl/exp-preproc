@@ -14,7 +14,7 @@ plotclean:
 
 allclean: plotclean
 	rm -f data-sessions/*
-	rm -f data-trials/*
+	rm -rf data-trials/*
 	rm -f data-epoched/*
 
 checkdirs:

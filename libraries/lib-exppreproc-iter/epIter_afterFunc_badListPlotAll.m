@@ -23,6 +23,7 @@ function epIter_badListPlotAll( ...
 % "outprefixpat" is a sprintf pattern used to generate prefixes for output
 %   filenames (such as plots, lists, and CSV data tables). This needs two
 %   '%s' tokens, for the session label and probe label (in that order).
+%   Generating names that include subfolders is fine.
 % "infilepat" is a sprintf pattern used to generate the input file name
 %   for reading per-probe bad channel analysis output. This needs two '%s'
 %   tokens, for the session label and probe label (in that order).
@@ -62,6 +63,9 @@ ftlabels_cooked = badlists.ftlabels_cooked;
 
 outprefix = sprintf( outprefixpat, sessionlabel, probelabel );
 infile = sprintf( infilepat, sessionlabel, probelabel );
+
+% Checking the prefix rather than the full filenames is fine.
+nlUtil_makeSureFolderExists(outprefix);
 
 
 if ~exist(infile, 'file')

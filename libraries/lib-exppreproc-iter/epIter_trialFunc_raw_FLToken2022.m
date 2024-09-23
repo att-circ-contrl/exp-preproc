@@ -24,7 +24,8 @@ function trialresult = epIter_trialFunc_raw_FLToken2022( ...
 % "outfilepat" is a sprintf pattern used to generate the output file name
 %   for saving Field Trip data. This needs three '%s' tokens, for the
 %   session label, probe label, and trial label (in that order). The output
-%   file will contain "ftdata_raw" and "ftlabels_cooked", per PREPROCFILES.txt.
+%   file will contain "ftdata_raw" and "ftlabels_cooked", per
+%   PREPROCFILES.txt. Generating names that include subfolders is fine.
 % "wantforce" is true to redo processing even if the output file already
 %   exists, and false to skip processing if the output file is present.
 % "sessionmeta" is a single session metadata structure, per SESSIONMETA.txt.
@@ -49,6 +50,8 @@ trialresult = NaN;
 
 outfile  = sprintf( outfilepat, sessionmeta.sessionlabel, ...
   probemeta.label, trialdefmeta.triallabels{tidx} );
+
+nlUtil_makeSureFolderExists(outfile);
 
 % FLToken 2022-2023 saved data in Open Ephys format.
 infolder = sessionmeta.folders_openephys{1};
