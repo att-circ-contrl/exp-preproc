@@ -26,6 +26,36 @@ end
 
 
 %
+% Make sure all of the trial subfolders are present.
+
+% For serial processing, the iteration functions will do this for us, but
+% with parallel processing we might get race conditions. So, do it ahead of
+% time, and force serial processing.
+
+% Make sure to give this a dummy filename after the folder name.
+beforefunc = @(sessionmeta, probemeta, trialdefmeta, wantmsgs) ...
+  epIter_beforeFunc_makeFolders( ...
+    [ trialdir filesep sessionmeta.sessionlabel '-' probemeta.label ...
+      filesep 'foo.txt' ], wantmsgs );
+
+% No "after trial" processing.
+
+% No "per trial" processing.
+
+% Iterate.
+% Explicitly turn off parallel processing for this call.
+
+if want_messages
+  disp('.. Creating trial sub-folders.');
+end
+
+epIter_processSessions( sessionlist, ...
+  [ sessiondir filesep '%s-trialmeta.mat' ], beforefunc, NaN, ...
+  NaN, false, want_messages );
+
+
+
+%
 % Do raw segmentation.
 
 
