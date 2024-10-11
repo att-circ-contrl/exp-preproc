@@ -195,7 +195,7 @@ end
 
 
 %
-% Get derived signals, discarding bad channels.
+% Get derived signals.
 % This includes doing re-referencing, which is why bad channels have to be
 % known.
 
