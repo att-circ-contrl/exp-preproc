@@ -15,7 +15,7 @@ do_setup_stuff;
 infile = [ sessiondir filesep 'dataset-meta.mat' ];
 if ~exist(infile, 'file')
   disp('###  Can''t find global metadata. Bailing out.');
-  edit;
+  exit;
 else
   % This provides "sessionlist", "ttldefs", "probelabels", and "probetitles".
   % We only care about "sessionlist".
