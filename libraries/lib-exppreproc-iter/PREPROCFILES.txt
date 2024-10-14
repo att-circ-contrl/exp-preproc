@@ -79,6 +79,10 @@ segment entire trials aligned to some common event. Subsequent analyses can
 extract smaller time windows aligned to other features within these large
 segments.
 
+Column names in the trial definition table are "sampstart", "sampend",
+"sampoffset", "timestart", "timeend", "timetrigger", "trialnum", and
+"trialindex".
+
 
 
 Per-probe data:
