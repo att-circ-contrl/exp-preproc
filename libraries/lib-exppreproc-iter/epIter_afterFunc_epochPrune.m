@@ -143,6 +143,11 @@ keepmaskshortdecim( oldmeta.trial_origfrommasked ) = ...
   keepmaskshort & keepmaskdecim;
 keepmask = keepmask & keepmaskshortdecim;
 
+if wantmsgs
+  disp(sprintf( '.. Keeping %d of %d trials.', ...
+    sum(keepmask), length(keepmask) ));
+end
+
 
 
 % Apply the trial mask to metadata and to Field Trip data.
