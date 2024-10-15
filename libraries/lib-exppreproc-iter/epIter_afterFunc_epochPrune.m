@@ -1,17 +1,18 @@
 function epIter_afterFunc_epochPrune( ...
   infilepat_ephys, infilepat_meta, outfilepat_ephys, outfilepat_meta, ...
   sessionlabel, probelabel, required_time_range, long_trial_threshold, ...
-  trial_max_count, chan_max_count, wantmsgs )
+  trials_wanted, chans_wanted, wantmsgs )
 
 % function epIter_afterFunc_epochPrune( ...
 %   infilepat_ephys, infilepat_meta, outfilepat_ephys, outfilepat_meta, ...
 %   sessionlabel, probelabel, required_time_range, long_trial_threshold, ...
-%   trial_max_count, chan_max_count, wantmsgs )
+%   trials_wanted, chans_wanted, wantmsgs )
 %
 % This function discards trials from epoched metadata that don't meet
 % acceptance criteria. Epoched trials must cover a desired time range,
 % trials before epoch trimming must not have been too long, and trials and
-% channels may also be decimated to generate smaller test datasets.
+% channels may also be filtered or decimated to generate smaller test
+% datasets.
 %
 % "infilepat_ephys" is a sprintf pattern used to generate the input file name
 %   for per-probe epoched Field Trip data (per PREPROCFILES.txt). This needs
@@ -29,8 +30,12 @@ function epIter_afterFunc_epochPrune( ...
 %   epoched trial needs to cover.
 % "long_trial_threshold" is a factor to multiply the median non-epoched
 %   trial duration by. Any non-epoched trial longer than this is discarded.
-% "trial_max_count" is the maximum number of trials to save.
-% "chan_max_count" is the maximum number of channels to save.
+% "trials_wanted" is either a scalar (the maximum number of trials to save)
+%   or a boolean vector (true for trials to be kept, false to discard).
+% "chans_wanted" is either a scalar (the maximum number of channels to save)
+%   or a cell array containing cooked channel labels to be kept. Channels
+%   that are in this list but not the data are ignored (so a global list
+%   rather than per-probe lists is fine).
 % "wantmsgs" is true to emit console messages and false otherwise.
 %
 % No return value.
@@ -109,21 +114,26 @@ end
 
 
 
-% Decimate trials, if requested.
-
-keepmaskdecim = true(size( keepmaskshort ));
-if trialcountepoched > trial_max_count
-  keepmaskdecim = nlProc_decimateBresenham( trial_max_count, keepmaskdecim );
-end
-
-
-
-% Report.
+% Report wrong-size trials.
 
 if wantmsgs
   disp(sprintf( '..  %d short trials (of %d), %d long trials (of %d).', ...
     trialcountepoched - sum(keepmaskshort), trialcountepoched, ...
     trialcountorig - sum(keepmasklong), trialcountorig ));
+end
+
+
+
+% Decimate trials, if requested.
+
+if islogical(trials_wanted) || (~isscalar(trials_wanted))
+  keepmaskdecim = logical(trials_wanted);
+  keepmaskdecim = reshape( keepmaskdecim, size(keepmaskshort) );
+else
+  keepmaskdecim = true(size( keepmaskshort ));
+  if trialcountepoched > trials_wanted
+    keepmaskdecim = nlProc_decimateBresenham( trials_wanted, keepmaskdecim );
+  end
 end
 
 
@@ -188,8 +198,12 @@ end
 chancount = length(newephys.ftdata.label);
 
 chanmask = true(size( newephys.ftdata.label ));
-if chancount > chan_max_count
-  chanmask = nlProc_decimateBresenham( chan_max_count, chanmask );
+
+if iscell(chans_wanted)
+% FIXME - Need to build a channel mask vector here!
+% FIXME - Add mask syntax too.
+elseif chancount > chans_wanted
+  chanmask = nlProc_decimateBresenham( chans_wanted, chanmask );
 end
 
 if wantmsgs
