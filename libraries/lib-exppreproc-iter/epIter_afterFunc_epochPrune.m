@@ -30,12 +30,22 @@ function epIter_afterFunc_epochPrune( ...
 %   epoched trial needs to cover.
 % "long_trial_threshold" is a factor to multiply the median non-epoched
 %   trial duration by. Any non-epoched trial longer than this is discarded.
-% "trials_wanted" is either a scalar (the maximum number of trials to save)
-%   or a boolean vector (true for trials to be kept, false to discard).
-% "chans_wanted" is either a scalar (the maximum number of channels to save)
-%   or a cell array containing cooked channel labels to be kept. Channels
-%   that are in this list but not the data are ignored (so a global list
-%   rather than per-probe lists is fine).
+% "trials_wanted" is a scalar, a boolean vector, or a structure indexed by
+%   session label. If it's a scalar, it's the maximum number of trials to
+%   keep (trials are decimated). If it's a boolean vector with a number of
+%   elements equal to the number of trials, it indicates which trials from
+%   the epoched (not original) trial definition list to keep (trials for
+%   false elements are discarded). If it's a structure indexed by session
+%   label, the corresponding element is either a scalar or a boolean vector
+%   interpreted per above.
+% "chans_wanted" is a scalar, a cell array, a boolean vector, or a structure
+%   indexed by session label. If it's a scalar, it's the maximum number of
+%   channels to keep (channels are decimated). If it's a cell array, it
+%   contains cooked labels of channels to keep. If it's a boolean vector with
+%   a number of elements equal to the number of channels, it indicates which
+%   channels to keep (channels for false elements are discarded). If it's a
+%   structure indexed by session label, the corresponding element is a
+%   scalar, a cell array, or a boolean vector interpreted per above.
 % "wantmsgs" is true to emit console messages and false otherwise.
 %
 % No return value.
@@ -65,7 +75,102 @@ oldephys = load(infile_ephys);
 
 
 
+%
+% Turn the channel specifier into a mask.
+
+chanlistraw = oldephys.ftdata.label;
+chanlistcooked = oldephys.ftlabels_cooked;
+
+chanmask = true(size( chanlistraw ));
+
+if isstruct(chans_wanted)
+  if isfield( chans_wanted, sessionlabel )
+    chans_wanted = chans_wanted.(sessionlabel);
+  else
+    chans_wanted = chanmask;
+    if wantmsgs
+      disp([ '###  [epIter_afterFunc_epochPrune]  ' ...
+        'No field for session "' sessionlabel '" in chans_wanted.' ]);
+    end
+  end
+end
+
+if iscell(chans_wanted)
+  % Preserve geometry of "chanmask" in case the cooked list is transposed.
+  % This shouldn't be necessary and also shouldn't happen, but do it anyways.
+  chanmask(:) = contains( chanlistcooked, chans_wanted );
+end
+
+if islogical(chans_wanted) || (~isscalar(chans_wanted))
+  if ~islogical(chans_wanted)
+    % Convert numeric vector to boolean vector.
+    chans_wanted = logical(chans_wanted);
+  end
+
+  if length(chans_wanted) == length(chanmask)
+    % Preserve geometry.
+    chanmask(:) = chans_wanted(:);
+  else
+    if wantmsgs
+      disp(sprintf( [ '###  [epIter_afterFunc_epochPrune]  ' ...
+        'Expected %d elements in chans_wanted, given %d elements.' ], ...
+        length(chanmask), length(chans_wanted) ));
+    end
+  end
+else
+  % Scalar.
+  if chans_wanted < length(chanmask)
+    chanmask = nlProc_decimateBresenham( chans_wanted, chanmask );
+  end
+end
+
+
+
+%
+% Turn the trial specifier into a mask.
+
+trialmask = true(size( oldephys.ftdata.trial ));
+
+if isstruct(trials_wanted)
+  if isfield( trials_wanted, sessionlabel )
+    trials_wanted = trials_wanted.(sessionlabel);
+  else
+    trials_wanted = trialmask;
+    if wantmsgs
+      disp([ '###  [epIter_afterFunc_epochPrune]  ' ...
+        'No field for session "' sessionlabel '" in trials_wanted.' ]);
+    end
+  end
+end
+
+if islogical(trials_wanted) || (~isscalar(trials_wanted))
+  if ~islogical(trials_wanted)
+    % Convert numeric vector to boolean vector.
+    trials_wanted = logical(trials_wanted);
+  end
+
+  if length(trials_wanted) == length(trialmask)
+    % Preserve geometry.
+    trialmask(:) = trials_wanted(:);
+  else
+    if wantmsgs
+      disp(sprintf( [ '###  [epIter_afterFunc_epochPrune]  ' ...
+        'Expected %d elements in trials_wanted, given %d elements.' ], ...
+        length(trialmask), length(trials_wanted) ));
+    end
+  end
+else
+  % Scalar.
+  if trials_wanted < length(trialmask)
+    trialmask = nlProc_decimateBresenham( trials_wanted, trialmask );
+  end
+end
+
+
+
+%
 % Identify before-epoch trials that are too long.
+
 
 trialdeftab = oldmeta.oldtrialmeta.trialdeftable;
 
@@ -74,11 +179,20 @@ durlist = trialdeftab.timeend - trialdeftab.timestart;
 durmedian = median(durlist);
 durlong = long_trial_threshold * durmedian;
 
-keepmasklong = (durlist <= durlong);
-trialcountorig = length(keepmasklong);
+% NOTE - This mask uses before-epoching trial indexing.
+keepmasklong_orig = (durlist <= durlong);
+trialcountorig = length(keepmasklong_orig);
+
+
+% Convert this to epoched indexing and apply it to the mask.
+
+keepmasklong = true(size( trialmask ));
+keepmasklong(:) = keepmasklong_orig( oldmeta.trial_origfrommasked );
+trialmask = trialmask & keepmasklong;
 
 
 
+%
 % Identify epoched trials that are too short.
 % We have to do this by looking at timestamps, since we didn't save the
 % trial definitioni structures for making epoched data.
@@ -112,60 +226,44 @@ if false && wantmsgs
   disp(sprintf( 'xx  Want %+.2f to %+.2f.', mintime, maxtime ));
 end
 
+% Apply this to the trial mask.
+trialmask(:) = trialmask(:) & keepmaskshort(:);
 
 
+
+%
 % Report wrong-size trials.
 
 if wantmsgs
   disp(sprintf( '..  %d short trials (of %d), %d long trials (of %d).', ...
     trialcountepoched - sum(keepmaskshort), trialcountepoched, ...
-    trialcountorig - sum(keepmasklong), trialcountorig ));
+    trialcountorig - sum(keepmasklong_orig), trialcountorig ));
 end
 
 
 
-% Decimate trials, if requested.
-
-if islogical(trials_wanted) || (~isscalar(trials_wanted))
-  keepmaskdecim = logical(trials_wanted);
-  keepmaskdecim = reshape( keepmaskdecim, size(keepmaskshort) );
-else
-  keepmaskdecim = true(size( keepmaskshort ));
-  if trialcountepoched > trials_wanted
-    keepmaskdecim = nlProc_decimateBresenham( trials_wanted, keepmaskdecim );
-  end
-end
+%
+% Apply the trial mask to metadata and to Field Trip data.
 
 
-
-% Build the final trial-pruning mask.
-
-% Mask off old trials that weren't used to make epoched trials.
-keepmask = false(size( keepmasklong ));
-keepmask( oldmeta.trial_origfrommasked ) = true;
-
-% Mask off old trials that were too long.
-keepmask = keepmask & keepmasklong;
-
-% Expand the short-trial and decimation masks to the original size.
-keepmaskshortdecim = false(size( keepmasklong ));
-keepmaskshortdecim( oldmeta.trial_origfrommasked ) = ...
-  keepmaskshort & keepmaskdecim;
-keepmask = keepmask & keepmaskshortdecim;
+% Get a trial mask version that's expanded to the original size.
+trialmask_orig = false(size( keepmasklong_orig ));
+trialmask_orig( oldmeta.trial_origfrommasked ) = trialmask;
 
 if wantmsgs
-  disp(sprintf( '.. Keeping %d of %d trials.', ...
-    sum(keepmask), length(keepmask) ));
+  disp(sprintf( '.. Keeping %d of %d epoched trials (%d of %d original).', ...
+    sum(trialmask), length(trialmask), ...
+    sum(trialmask_orig), length(trialmask_orig) ));
 end
 
 
-
-% Apply the trial mask to metadata and to Field Trip data.
+% Mask the metadata.
 
 newmeta = oldmeta;
 
+% Re-filter using the original non-epoched metadata.
 [ newtrialmeta new_origfrommasked new_maskedfromorig ] = ...
-  epIter_helper_pruneTrialMetadata( oldmeta.oldtrialmeta, keepmask );
+  epIter_helper_pruneTrialMetadata( oldmeta.oldtrialmeta, trialmask_orig );
 
 % Drop trial definitions and alignment code, since they're no longer valid.
 newtrialmeta = rmfield( newtrialmeta, ...
@@ -175,45 +273,32 @@ newmeta.newtrialmeta = newtrialmeta;
 newmeta.trial_origfrommasked = new_origfrommasked;
 newmeta.trial_maskedfromorig = new_maskedfromorig;
 
+
+% Mask the ephys trials.
+% Use the epoched version of the mask, since we're working on epoched data.
+
 newephys = oldephys;
 
-% Remember that the old Field Trip trials were already masked.
-keepmask = keepmask( oldmeta.trial_origfrommasked );
-
-newephys.ftdata.time = newephys.ftdata.time(keepmask);
-newephys.ftdata.trial = newephys.ftdata.trial(keepmask);
+newephys.ftdata.time = newephys.ftdata.time(trialmask);
+newephys.ftdata.trial = newephys.ftdata.trial(trialmask);
 
 if isfield(newephys.ftdata, 'sampleinfo')
-  newephys.ftdata.sampleinfo = newephys.ftdata.sampleinfo(keepmask,:);
+  newephys.ftdata.sampleinfo = newephys.ftdata.sampleinfo(trialmask,:);
 end
 
 if isfield(newephys.ftdata, 'trialinfo')
-  newephys.ftdata.trialinfo = newephys.ftdata.trialinfo(keepmask,:);
+  newephys.ftdata.trialinfo = newephys.ftdata.trialinfo(trialmask,:);
 end
 
 
 
-% Build the channel mask.
-
-chancount = length(newephys.ftdata.label);
-
-chanmask = true(size( newephys.ftdata.label ));
-
-if iscell(chans_wanted)
-% FIXME - Need to build a channel mask vector here!
-% FIXME - Add mask syntax too.
-elseif chancount > chans_wanted
-  chanmask = nlProc_decimateBresenham( chans_wanted, chanmask );
-end
+%
+% Apply the channel mask.
 
 if wantmsgs
   disp(sprintf( '.. Keeping %d of %d channels.', ...
     sum(chanmask), length(chanmask) ));
 end
-
-
-
-% Apply the channel mask.
 
 newmeta.ftlabels_raw = newmeta.ftlabels_raw(chanmask);
 newmeta.ftlabels_cooked = newmeta.ftlabels_cooked(chanmask);
@@ -229,6 +314,7 @@ end
 
 
 
+%
 % Save the revised data.
 
 if wantmsgs
