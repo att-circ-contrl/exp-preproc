@@ -1,12 +1,12 @@
 function epIter_afterFunc_epochPrune( ...
   infilepat_ephys, infilepat_meta, outfilepat_ephys, outfilepat_meta, ...
   sessionlabel, probelabel, required_time_range, long_trial_threshold, ...
-  trials_wanted, chans_wanted, wantmsgs )
+  trials_wanted, max_trials, chans_wanted, wantmsgs )
 
 % function epIter_afterFunc_epochPrune( ...
 %   infilepat_ephys, infilepat_meta, outfilepat_ephys, outfilepat_meta, ...
 %   sessionlabel, probelabel, required_time_range, long_trial_threshold, ...
-%   trials_wanted, chans_wanted, wantmsgs )
+%   trials_wanted, max_trials, chans_wanted, wantmsgs )
 %
 % This function discards trials from epoched metadata that don't meet
 % acceptance criteria. Epoched trials must cover a desired time range,
@@ -31,14 +31,15 @@ function epIter_afterFunc_epochPrune( ...
 % "long_trial_threshold" is a factor to multiply the median non-epoched
 %   trial duration by. Any non-epoched trial longer than this is discarded.
 %   Use a threshold of inf to keep all trials.
-% "trials_wanted" is a scalar, a boolean vector, or a structure indexed by
-%   session label. If it's a scalar, it's the maximum number of trials to
-%   keep (trials are decimated). If it's a boolean vector with a number of
-%   elements equal to the number of trials, it indicates which trials from
-%   the epoched (not original) trial definition list to keep (trials for
-%   false elements are discarded). If it's a structure indexed by session
-%   label, the corresponding element is either a scalar or a boolean vector
-%   interpreted per above.
+% "trials_wanted" is a boolean vector or a structure indexed by session
+%   label. If it's a boolean vector with a number of elements equal to the
+%   number of trials, it indicates which trials from the epoched (not
+%   original) trial definition list to keep (trials for false elements are
+%   discarded). If it's [], no trial filtering is performed. If it's a
+%   structure indexed by session label, the corresponding element is a
+%   boolean vector interpreted per above.
+% "max_trials" is a scalar indicating the maximum number of trials to keep
+%   (trials are decimated).
 % "chans_wanted" is a scalar, a cell array, a boolean vector, or a structure
 %   indexed by session label. If it's a scalar, it's the maximum number of
 %   channels to keep (channels are decimated). If it's a cell array, it
@@ -129,10 +130,9 @@ end
 
 %
 % Turn the trial specifier into a mask.
-% Don't decimate yet; we don't know how many trials will pass other filters.
+
 
 trialmask = true(size( oldephys.ftdata.trial ));
-maxtrialcount = inf;
 
 if isstruct(trials_wanted)
   if isfield( trials_wanted, sessionlabel )
@@ -146,7 +146,8 @@ if isstruct(trials_wanted)
   end
 end
 
-if islogical(trials_wanted) || (~isscalar(trials_wanted))
+% This should now be a logical vector, or an empty vector.
+if ~isempty(trials_wanted)
   if ~islogical(trials_wanted)
     % Convert numeric vector to boolean vector.
     trials_wanted = logical(trials_wanted);
@@ -162,9 +163,6 @@ if islogical(trials_wanted) || (~isscalar(trials_wanted))
         length(trialmask), length(trials_wanted) ));
     end
   end
-else
-  % Scalar.
-  maxtrialcount = trials_wanted;
 end
 
 
@@ -253,9 +251,9 @@ end
 %
 % Decimate trials if requested.
 
-if maxtrialcount < sum(trialmask)
+if max_trials < sum(trialmask)
   masklut = find(trialmask);
-  maskmask = nlProc_decimateBresenham( maxtrialcount, masklut );
+  maskmask = nlProc_decimateBresenham( max_trials, masklut );
   trialmask(masklut) = maskmask;
 end
 
