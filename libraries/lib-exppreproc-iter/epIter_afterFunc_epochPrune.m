@@ -27,9 +27,10 @@ function epIter_afterFunc_epochPrune( ...
 % "sessionlabel" is the filename-safe session label (from session metadata).
 % "probelabel" is the filename-safe probe label (from the probe definition).
 % "required_time_range" [ min max ] is the time range in seconds that the
-%   epoched trial needs to cover.
+%   epoched trial needs to cover, or [] to not filter by time range.
 % "long_trial_threshold" is a factor to multiply the median non-epoched
 %   trial duration by. Any non-epoched trial longer than this is discarded.
+%   Use a threshold of inf to keep all trials.
 % "trials_wanted" is a scalar, a boolean vector, or a structure indexed by
 %   session label. If it's a scalar, it's the maximum number of trials to
 %   keep (trials are decimated). If it's a boolean vector with a number of
@@ -128,8 +129,10 @@ end
 
 %
 % Turn the trial specifier into a mask.
+% Don't decimate yet; we don't know how many trials will pass other filters.
 
 trialmask = true(size( oldephys.ftdata.trial ));
+maxtrialcount = inf;
 
 if isstruct(trials_wanted)
   if isfield( trials_wanted, sessionlabel )
@@ -161,9 +164,7 @@ if islogical(trials_wanted) || (~isscalar(trials_wanted))
   end
 else
   % Scalar.
-  if trials_wanted < length(trialmask)
-    trialmask = nlProc_decimateBresenham( trials_wanted, trialmask );
-  end
+  maxtrialcount = trials_wanted;
 end
 
 
@@ -197,21 +198,26 @@ trialmask = trialmask & keepmasklong;
 % We have to do this by looking at timestamps, since we didn't save the
 % trial definitioni structures for making epoched data.
 
-epsilon = 1e-3;
-mintime = min(required_time_range) + epsilon;
-maxtime = max(required_time_range) - epsilon;
+% Initialize all-pass versions of the mask for reporting.
+keepmaskshort = true(size( oldephys.ftdata.time ));
+trialcountepoched = length(keepmaskshort);
 
-timeliststart = [];
-timelistend = [];
+if ~isempty(required_time_range)
 
-trialcountepoched = length(oldephys.ftdata.time);
-for tidx = 1:trialcountepoched
-  thistime = oldephys.ftdata.time{tidx};
-  timeliststart(tidx) = min(thistime);
-  timelistend(tidx) = max(thistime);
-end
+  epsilon = 1e-3;
+  mintime = min(required_time_range) + epsilon;
+  maxtime = max(required_time_range) - epsilon;
 
-keepmaskshort = (timeliststart <= mintime) & (timelistend >= maxtime);
+  timeliststart = [];
+  timelistend = [];
+
+  for tidx = 1:trialcountepoched
+    thistime = oldephys.ftdata.time{tidx};
+    timeliststart(tidx) = min(thistime);
+    timelistend(tidx) = max(thistime);
+  end
+
+  keepmaskshort = (timeliststart <= mintime) & (timelistend >= maxtime);
 
 % FIXME - Diagnostics.
 if false && wantmsgs
@@ -226,8 +232,10 @@ if false && wantmsgs
   disp(sprintf( 'xx  Want %+.2f to %+.2f.', mintime, maxtime ));
 end
 
-% Apply this to the trial mask.
-trialmask(:) = trialmask(:) & keepmaskshort(:);
+  % Apply this to the trial mask.
+  trialmask(:) = trialmask(:) & keepmaskshort(:);
+
+end
 
 
 
@@ -238,6 +246,17 @@ if wantmsgs
   disp(sprintf( '..  %d short trials (of %d), %d long trials (of %d).', ...
     trialcountepoched - sum(keepmaskshort), trialcountepoched, ...
     trialcountorig - sum(keepmasklong_orig), trialcountorig ));
+end
+
+
+
+%
+% Decimate trials if requested.
+
+if maxtrialcount < sum(trialmask)
+  masklut = find(trialmask);
+  maskmask = nlProc_decimateBresenham( maxtrialcount, masklut );
+  trialmask(masklut) = maskmask;
 end
 
 
