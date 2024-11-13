@@ -4,14 +4,14 @@
 % Paths.
 
 addpath('../libraries');
-addpath('libs-ext/lib-exp-utils-cjt');
+addpath('libs-ext/lib-exp-utils');
 addpath('libs-ext/lib-looputil');
 addpath('libs-ext/lib-openephys');
 addpath('libs-ext/lib-npy-matlab');
 addpath('libs-ext/lib-fieldtrip');
 
 addPathsExpPreproc;
-addPathsExpUtilsCjt;
+addPathsExpUtils;
 addPathsLoopUtil;
 
 
