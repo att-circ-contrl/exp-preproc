@@ -54,8 +54,8 @@ This library requires the following other libraries:
 * The `npy-matlab` library (needed by Open Ephys's library; it comes with it).
 * The `LoopUtil` library from our lab's GitHub page:
 <https://github.com/att-circ-contrl/LoopUtil>
-* The `exp-utils-cjt` library from our lab's GitHub page:
-<https://github.com/att-circ-contrl/exp-utils-cjt>
+* The `exp-utils` library from our lab's GitHub page:
+<https://github.com/att-circ-contrl/exp-utils>
 
 
 ## Sample Code Folder
